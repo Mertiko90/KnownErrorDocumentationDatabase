@@ -26,9 +26,9 @@ def get_all_articles(
     
     if search:
         query = query.filter(
-            (Article.title.contains(search)) |
-            (Article.problem_description.contains(search)) |
-            (Article.tags.contains(search))
+            (Article.title.ilike(f"%{search}%")) |
+            (Article.problem_description.ilike(f"%{search}%")) |
+            (Article.tags.ilike(f"%{search}%"))
         )
     
     articles = query.offset(skip).limit(limit).all()
