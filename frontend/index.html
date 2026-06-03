@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KEDB Portal — IT Knowledge Base</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-50:  #E6F1FB;
+      --blue-100: #B5D4F4;
+      --blue-600: #185FA5;
+      --blue-800: #0C447C;
+      --green-50: #EAF3DE;
+      --green-800: #3B6D11;
+      --amber-50: #FAEEDA;
+      --amber-800: #854F0B;
+      --pink-50:  #FBEAF0;
+      --pink-800: #993556;
+      --teal-50:  #E1F5EE;
+      --teal-800: #0F6E56;
+      --purple-50: #EEEDFE;
+      --purple-800: #534AB7;
+      --red-50:   #FCEBEB;
+      --red-800:  #A32D2D;
+      --gray-100: #D3D1C7;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #ffffff;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── NAVBAR ── */
+    nav {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 0.5px solid #e0e0e0;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--blue-600); }
+
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+
+    .btn-ghost {
+      background: transparent;
+      border: 0.5px solid #bbb;
+      color: #1a1a1a;
+      padding: 7px 18px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+    }
+    .btn-ghost:hover { background: #f5f5f5; }
+
+    .btn-primary {
+      background: var(--blue-600);
+      border: none;
+      color: #fff;
+      padding: 7px 18px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: var(--blue-800); }
+
+    /* ── WRAPPER ── */
+    .lp {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 5rem 0 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--blue-50);
+      color: var(--blue-600);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 38px;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn-lg {
+      padding: 10px 24px;
+      font-size: 14px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+    .btn-lg-primary { background: var(--blue-600); color: #fff; border: none; }
+    .btn-lg-primary:hover { background: var(--blue-800); }
+    .btn-lg-outline { background: transparent; color: #1a1a1a; border: 0.5px solid #bbb; }
+    .btn-lg-outline:hover { background: #f5f5f5; }
+
+    /* ── HERO VISUAL (mock app) ── */
+    .hero-visual {
+      background: #f8f8f6;
+      border: 0.5px solid #e0e0e0;
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+    }
+
+    .mock-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 0.5px solid #e0e0e0;
+    }
+    .mock-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .mock-search {
+      flex: 1;
+      height: 24px;
+      background: #fff;
+      border: 0.5px solid #e0e0e0;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+    }
+    .mock-search span { font-size: 11px; color: #aaa; }
+
+    .mock-row {
+      background: #fff;
+      border: 0.5px solid #e0e0e0;
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .mock-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 100px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .badge-err  { background: var(--red-50);   color: var(--red-800); }
+    .badge-sol  { background: var(--green-50);  color: var(--green-800); }
+    .badge-warn { background: var(--amber-50);  color: var(--amber-800); }
+
+    .mock-title { font-size: 12px; font-weight: 500; }
+    .mock-sub   { font-size: 11px; color: #888; margin-top: 2px; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: #f8f8f6;
+      border-top: 0.5px solid #e0e0e0;
+      border-bottom: 0.5px solid #e0e0e0;
+      padding: 2.5rem 1.5rem;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      color: var(--blue-600);
+    }
+    .stat-label { font-size: 12px; color: #888; margin-top: 4px; }
+
+    /* ── SECTIONS ── */
+    .section { padding: 4rem 0; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--blue-600);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      margin-bottom: 0.75rem;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: #555;
+      max-width: 500px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .feat-card {
+      background: #fff;
+      border: 0.5px solid #e0e0e0;
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+    }
+    .feat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      font-size: 16px;
+    }
+    .feat-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+    .feat-desc  { font-size: 13px; color: #666; line-height: 1.6; }
+
+    /* ── HOW IT WORKS ── */
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    .step { text-align: center; padding: 1.25rem 1rem; position: relative; }
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--blue-50);
+      color: var(--blue-600);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .step-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+    .step-desc  { font-size: 12px; color: #888; line-height: 1.5; }
+    .step-arrow { position: absolute; right: -12px; top: 30px; font-size: 14px; color: #ccc; }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: #f8f8f6;
+      border: 0.5px solid #e0e0e0;
+      border-radius: var(--radius-lg);
+      padding: 3rem 2.5rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .cta-title { font-family: 'DM Serif Display', serif; font-size: 26px; margin-bottom: 0.75rem; }
+    .cta-sub   { font-size: 14px; color: #666; margin-bottom: 2rem; }
+    .cta-btns  { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 0.5px solid #e0e0e0;
+      padding: 1.5rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+    }
+    .footer-logo { font-family: 'DM Serif Display', serif; font-size: 15px; }
+    .footer-logo span { color: var(--blue-600); }
+    .footer-copy { font-size: 12px; color: #aaa; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 650px) {
+      .hero          { grid-template-columns: 1fr; }
+      .hero-visual   { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      .how-steps     { grid-template-columns: 1fr 1fr; }
+      .stats-grid    { grid-template-columns: repeat(2, 1fr); }
+      .step-arrow    { display: none; }
+      .hero h1       { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo">KEDB<span>.</span>portal</div>
+    <div class="nav-actions">
+      <a href="/login.html"><button class="btn-ghost">Sign in</button></a>
+      <a href="/register.html"><button class="btn-primary">Register</button></a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="lp">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div>
+        <span class="hero-tag">IT Knowledge Base</span>
+        <h1>Known errors.<br>Documented solutions.</h1>
+        <p>Centralize your IT error knowledge. From SAP incidents to Active Directory failures — find, share and resolve faster.</p>
+        <div class="hero-btns">
+          <a href="/register.html"><button class="btn-lg btn-lg-primary">Get started free</button></a>
+          <a href="#how-it-works"><button class="btn-lg btn-lg-outline">See how it works</button></a>
+        </div>
+      </div>
+
+      <!-- Mock App Preview -->
+      <div class="hero-visual">
+        <div class="mock-header">
+          <div class="mock-dot" style="background:#E24B4A;"></div>
+          <div class="mock-dot" style="background:#EF9F27;"></div>
+          <div class="mock-dot" style="background:#639922;"></div>
+          <div class="mock-search"><span>Search known errors...</span></div>
+        </div>
+        <div class="mock-row">
+          <span class="mock-badge badge-err">SAP</span>
+          <div>
+            <div class="mock-title">RFC_NO_AUTHORITY — authorization error</div>
+            <div class="mock-sub">Solved by 12 technicians · 3 solutions</div>
+          </div>
+        </div>
+        <div class="mock-row">
+          <span class="mock-badge badge-sol">AD</span>
+          <div>
+            <div class="mock-title">LDAP bind failed after password policy change</div>
+            <div class="mock-sub">Solved by 7 technicians · 2 solutions</div>
+          </div>
+        </div>
+        <div class="mock-row">
+          <span class="mock-badge badge-warn">Network</span>
+          <div>
+            <div class="mock-title">DNS resolution failure on VLAN segment</div>
+            <div class="mock-sub">In progress · 1 solution pending review</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /.lp -->
+
+  <!-- STATS BAR (full width) -->
+  <div class="stats-bar">
+    <div class="stats-grid">
+      <div>
+        <div class="stat-num">1,240+</div>
+        <div class="stat-label">Documented errors</div>
+      </div>
+      <div>
+        <div class="stat-num">320+</div>
+        <div class="stat-label">Verified solutions</div>
+      </div>
+      <div>
+        <div class="stat-num">48h</div>
+        <div class="stat-label">Avg. resolution time saved</div>
+      </div>
+      <div>
+        <div class="stat-num">ITIL</div>
+        <div class="stat-label">Framework aligned</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lp">
+
+    <!-- FEATURES -->
+    <section class="section">
+      <div class="section-label">Features</div>
+      <div class="section-title">Everything your IT team needs</div>
+      <div class="section-sub">Built around ITIL best practices. Designed for real helpdesk teams.</div>
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-icon" style="background:var(--blue-50);color:var(--blue-600);">&#9906;</div>
+          <div class="feat-title">Error database</div>
+          <div class="feat-desc">Log known errors with root cause, workarounds and permanent fixes. Searchable by tag, category and system.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:var(--green-50);color:var(--green-800);">&#10003;</div>
+          <div class="feat-title">Solution tracking</div>
+          <div class="feat-desc">Track which solutions work and which don't. Rate and verify fixes with role-based access control.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:var(--amber-50);color:var(--amber-800);">&#9881;</div>
+          <div class="feat-title">Admin dashboard</div>
+          <div class="feat-desc">Manage users, assign roles, approve solutions and monitor database quality from one place.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:var(--pink-50);color:var(--pink-800);">&#128269;</div>
+          <div class="feat-title">Smart search</div>
+          <div class="feat-desc">Full-text search across error codes, descriptions and tags. Filter by system, status or severity.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:var(--teal-50);color:var(--teal-800);">&#128203;</div>
+          <div class="feat-title">Documentation</div>
+          <div class="feat-desc">Each error has a structured document: symptoms, affected systems, resolution steps and references.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:var(--purple-50);color:var(--purple-800);">&#128100;</div>
+          <div class="feat-title">Role management</div>
+          <div class="feat-desc">Admin, Technician and Read-only roles. Control who can submit, verify and publish solutions.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" id="how-it-works" style="padding-top:0;">
+      <div class="section-label">How it works</div>
+      <div class="section-title">From error to solution in 4 steps</div>
+      <div class="how-steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-title">Report an error</div>
+          <div class="step-desc">Technician logs a new error with symptoms, system and error code.</div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-title">Search first</div>
+          <div class="step-desc">System checks if the error already exists in the database with a solution.</div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-title">Document solution</div>
+          <div class="step-desc">Once resolved, the fix is documented and submitted for review.</div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-title">Admin approves</div>
+          <div class="step-desc">Admin verifies and publishes the solution. Knowledge is shared.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <div class="cta-title">Ready to build your knowledge base?</div>
+      <div class="cta-sub">Join your team. Start documenting. Stop solving the same errors twice.</div>
+      <div class="cta-btns">
+        <a href="/register.html"><button class="btn-lg btn-lg-primary">Create an account</button></a>
+        <a href="/login.html"><button class="btn-lg btn-lg-outline">Sign in</button></a>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-logo">KEDB<span>.</span>portal</div>
+      <div class="footer-copy">IT Administration &amp; Cyber Security Project &middot; 2025</div>
+    </footer>
+
+  </div><!-- /.lp -->
+
+</body>
+</html>

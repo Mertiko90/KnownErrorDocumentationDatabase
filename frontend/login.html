@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — KEDB Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue-50: #E6F1FB; --blue-100: #B5D4F4;
+      --blue-600: #185FA5; --blue-800: #0C447C;
+      --red-50: #FCEBEB; --red-800: #A32D2D;
+      --radius-md: 8px; --radius-lg: 12px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: #ffffff; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; }
+    a { text-decoration: none; color: inherit; }
+
+    nav {
+      max-width: 900px; margin: 0 auto; padding: 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 0.5px solid #e0e0e0; width: 100%;
+    }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 20px; letter-spacing: -0.5px; }
+    .logo span { color: var(--blue-600); }
+
+    .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 3rem 1.5rem; }
+
+    .card {
+      width: 100%; max-width: 400px;
+      border: 0.5px solid #e0e0e0; border-radius: var(--radius-lg);
+      padding: 2.5rem; background: #fff;
+    }
+    .card-header { margin-bottom: 2rem; }
+    .card-tag {
+      display: inline-block; background: var(--blue-50); color: var(--blue-600);
+      font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 100px;
+      margin-bottom: 1rem; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .card-title { font-family: 'DM Serif Display', serif; font-size: 26px; margin-bottom: 0.4rem; }
+    .card-sub { font-size: 13px; color: #777; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #333; }
+    input {
+      width: 100%; padding: 9px 12px; border: 0.5px solid #d0d0d0;
+      border-radius: var(--radius-md); font-size: 14px; font-family: 'DM Sans', sans-serif;
+      background: #fff; color: #1a1a1a; transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    input:focus { border-color: var(--blue-600); box-shadow: 0 0 0 3px var(--blue-50); }
+    input::placeholder { color: #bbb; }
+
+    .btn-submit {
+      width: 100%; padding: 10px; background: var(--blue-600); color: #fff;
+      border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s;
+      margin-top: 0.5rem;
+    }
+    .btn-submit:hover { background: var(--blue-800); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .divider { border: none; border-top: 0.5px solid #e0e0e0; margin: 1.5rem 0; }
+
+    .footer-link { font-size: 13px; color: #777; text-align: center; }
+    .footer-link a { color: var(--blue-600); font-weight: 500; }
+    .footer-link a:hover { text-decoration: underline; }
+
+    .error-box {
+      background: var(--red-50); color: var(--red-800); border: 0.5px solid #f5c6c6;
+      border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px;
+      margin-bottom: 1.25rem; display: none;
+    }
+    .error-box.visible { display: block; }
+
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer {
+      border-top: 0.5px solid #e0e0e0; padding: 1.25rem 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      max-width: 900px; margin: 0 auto; width: 100%;
+    }
+    .footer-logo { font-family: 'DM Serif Display', serif; font-size: 14px; }
+    .footer-logo span { color: var(--blue-600); }
+    .footer-copy { font-size: 12px; color: #aaa; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/index.html"><div class="logo">KEDB<span>.</span>portal</div></a>
+  </nav>
+
+  <div class="main">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-tag">IT Knowledge Base</span>
+        <div class="card-title">Welcome back</div>
+        <div class="card-sub">Sign in to your account to continue</div>
+      </div>
+
+      <div class="error-box" id="errorBox"></div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="your.username" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+
+      <button class="btn-submit" id="loginBtn" onclick="handleLogin()">Sign in</button>
+
+      <hr class="divider" />
+      <div class="footer-link">Don't have an account? <a href="/register.html">Register</a></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">KEDB<span>.</span>portal</div>
+    <div class="footer-copy">IT Administration &amp; Cyber Security Project · 2025</div>
+  </footer>
+
+  <script>
+    const API = '';
+
+    // If already logged in, redirect
+    if (localStorage.getItem('token')) {
+      window.location.href = '/dashboard.html';
+    }
+
+    document.getElementById('password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+
+    async function handleLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('loginBtn');
+      const errorBox = document.getElementById('errorBox');
+
+      errorBox.classList.remove('visible');
+
+      if (!username || !password) {
+        showError('Please fill in all fields.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Signing in…';
+
+      try {
+        const formData = new URLSearchParams();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        const res = await fetch(`${API}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.detail || 'Login failed. Please try again.');
+          return;
+        }
+
+        localStorage.setItem('token', data.access_token);
+        window.location.href = '/dashboard.html';
+
+      } catch (err) {
+        showError('Could not reach the server. Is the backend running?');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+      }
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      box.textContent = msg;
+      box.classList.add('visible');
+    }
+  </script>
+</body>
+</html>

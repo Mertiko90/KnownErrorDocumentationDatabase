@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — KEDB Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue-50: #E6F1FB; --blue-100: #B5D4F4; --blue-600: #185FA5; --blue-800: #0C447C;
+      --green-50: #EAF3DE; --green-800: #3B6D11;
+      --amber-50: #FAEEDA; --amber-800: #854F0B;
+      --pink-50: #FBEAF0; --pink-800: #993556;
+      --teal-50: #E1F5EE; --teal-800: #0F6E56;
+      --purple-50: #EEEDFE; --purple-800: #534AB7;
+      --red-50: #FCEBEB; --red-800: #A32D2D;
+      --radius-md: 8px; --radius-lg: 12px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: #f8f8f6; color: #1a1a1a; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+
+    /* NAV */
+    nav { background: #fff; border-bottom: 0.5px solid #e0e0e0; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 18px; }
+    .logo span { color: var(--blue-600); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .user-badge { font-size: 12px; color: #555; background: #f0f0ee; padding: 4px 10px; border-radius: 100px; }
+    .user-badge strong { color: #1a1a1a; }
+    .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: var(--radius-md); cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; border: 0.5px solid #bbb; background: transparent; transition: background 0.15s; }
+    .btn-sm:hover { background: #f5f5f5; }
+    .btn-sm-primary { background: var(--blue-600); color: #fff; border-color: var(--blue-600); }
+    .btn-sm-primary:hover { background: var(--blue-800); }
+
+    /* LAYOUT */
+    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 56px); }
+
+    /* SIDEBAR */
+    aside { background: #fff; border-right: 0.5px solid #e0e0e0; padding: 1.5rem 1rem; }
+    .sidebar-section { margin-bottom: 1.5rem; }
+    .sidebar-label { font-size: 10px; font-weight: 500; color: #aaa; letter-spacing: 0.8px; text-transform: uppercase; padding: 0 8px; margin-bottom: 6px; }
+    .sidebar-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: var(--radius-md); font-size: 13px; cursor: pointer; color: #444; transition: background 0.12s; }
+    .sidebar-item:hover { background: #f5f5f5; }
+    .sidebar-item.active { background: var(--blue-50); color: var(--blue-600); font-weight: 500; }
+    .sidebar-item .icon { font-size: 14px; width: 18px; text-align: center; }
+
+    /* MAIN */
+    main { padding: 2rem 2rem 3rem; overflow-x: hidden; }
+
+    /* PAGE HEADER */
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem; }
+    .page-title { font-family: 'DM Serif Display', serif; font-size: 24px; }
+    .page-sub { font-size: 13px; color: #777; margin-top: 3px; }
+
+    /* SEARCH + FILTER BAR */
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-wrap { flex: 1; min-width: 200px; position: relative; }
+    .search-wrap input { width: 100%; padding: 8px 12px 8px 34px; border: 0.5px solid #d0d0d0; border-radius: var(--radius-md); font-size: 13px; font-family: 'DM Sans', sans-serif; background: #fff; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .search-wrap input:focus { border-color: var(--blue-600); box-shadow: 0 0 0 3px var(--blue-50); }
+    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #bbb; pointer-events: none; }
+    select { padding: 8px 12px; border: 0.5px solid #d0d0d0; border-radius: var(--radius-md); font-size: 13px; font-family: 'DM Sans', sans-serif; background: #fff; outline: none; cursor: pointer; color: #333; }
+    select:focus { border-color: var(--blue-600); }
+
+    /* ARTICLES TABLE */
+    .table-wrap { background: #fff; border: 0.5px solid #e0e0e0; border-radius: var(--radius-lg); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: #f8f8f6; }
+    th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 0.5px solid #e0e0e0; }
+    td { padding: 12px 14px; font-size: 13px; border-bottom: 0.5px solid #f0f0ee; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafaf8; }
+    .article-title { font-weight: 500; font-size: 13px; margin-bottom: 3px; }
+    .article-desc { font-size: 12px; color: #888; line-height: 1.5; max-width: 340px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+    .cat-badge { font-size: 10px; padding: 2px 8px; border-radius: 100px; white-space: nowrap; font-weight: 500; }
+    .cat-network  { background: var(--blue-50);   color: var(--blue-600); }
+    .cat-hardware { background: var(--amber-50);  color: var(--amber-800); }
+    .cat-software { background: var(--green-50);  color: var(--green-800); }
+    .cat-security { background: var(--red-50);    color: var(--red-800); }
+    .cat-other    { background: #f0f0ee;           color: #666; }
+
+    .views-count { font-size: 12px; color: #aaa; white-space: nowrap; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag { font-size: 10px; padding: 2px 7px; border-radius: 100px; background: #f0f0ee; color: #666; }
+
+    .action-btns { display: flex; gap: 6px; white-space: nowrap; }
+    .btn-icon { padding: 5px 10px; font-size: 11px; border-radius: var(--radius-md); cursor: pointer; font-family: 'DM Sans', sans-serif; border: 0.5px solid #e0e0e0; background: #fff; transition: background 0.12s; }
+    .btn-icon:hover { background: #f5f5f5; }
+    .btn-icon-danger { border-color: #f5c6c6; color: var(--red-800); }
+    .btn-icon-danger:hover { background: var(--red-50); }
+
+    .empty-state { text-align: center; padding: 3rem; color: #aaa; font-size: 14px; }
+    .empty-icon { font-size: 28px; margin-bottom: 10px; }
+
+    .loading-row td { text-align: center; padding: 2.5rem; color: #aaa; font-size: 13px; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 200; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; padding: 2rem; }
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 20px; }
+    .modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: #aaa; padding: 0 4px; line-height: 1; }
+    .modal-close:hover { color: #333; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #333; }
+    .form-input { width: 100%; padding: 9px 12px; border: 0.5px solid #d0d0d0; border-radius: var(--radius-md); font-size: 14px; font-family: 'DM Sans', sans-serif; background: #fff; color: #1a1a1a; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .form-input:focus { border-color: var(--blue-600); box-shadow: 0 0 0 3px var(--blue-50); }
+    textarea.form-input { resize: vertical; min-height: 90px; }
+    select.form-input { cursor: pointer; }
+    .hint { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem; border-top: 0.5px solid #e0e0e0; padding-top: 1.25rem; }
+    .btn-cancel { padding: 8px 18px; font-size: 13px; border-radius: var(--radius-md); cursor: pointer; font-family: 'DM Sans', sans-serif; background: transparent; border: 0.5px solid #bbb; }
+    .btn-cancel:hover { background: #f5f5f5; }
+    .btn-save { padding: 8px 18px; font-size: 13px; border-radius: var(--radius-md); cursor: pointer; font-family: 'DM Sans', sans-serif; background: var(--blue-600); color: #fff; border: none; font-weight: 500; }
+    .btn-save:hover { background: var(--blue-800); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* DETAIL PANEL */
+    .detail-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 200; display: none; align-items: flex-start; justify-content: flex-end; }
+    .detail-overlay.open { display: flex; }
+    .detail-panel { background: #fff; width: 480px; max-width: 95vw; height: 100vh; overflow-y: auto; border-left: 0.5px solid #e0e0e0; padding: 2rem; animation: slideIn 0.2s ease; }
+    @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .detail-close { position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 18px; cursor: pointer; color: #aaa; }
+    .detail-close:hover { color: #333; }
+    .detail-cat { margin-bottom: 1rem; }
+    .detail-title { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 0.75rem; line-height: 1.3; }
+    .detail-meta { display: flex; gap: 12px; font-size: 12px; color: #aaa; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .detail-section { margin-bottom: 1.5rem; }
+    .detail-section-label { font-size: 11px; font-weight: 500; color: #aaa; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+    .detail-section-body { font-size: 14px; color: #333; line-height: 1.7; background: #f8f8f6; border-radius: var(--radius-md); padding: 12px 14px; white-space: pre-wrap; }
+    .solution-body { background: var(--green-50); color: #2a4a15; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #1a1a1a; color: #fff; padding: 10px 18px; border-radius: var(--radius-md); font-size: 13px; z-index: 999; opacity: 0; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ADMIN BADGE */
+    .role-badge { font-size: 10px; padding: 2px 8px; border-radius: 100px; }
+    .role-admin { background: var(--purple-50); color: var(--purple-800); }
+    .role-user  { background: #f0f0ee; color: #666; }
+
+    @media (max-width: 720px) {
+      .layout { grid-template-columns: 1fr; }
+      aside { display: none; }
+      .detail-panel { width: 100vw; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo">KEDB<span>.</span>portal</div>
+    <div class="nav-right">
+      <div class="user-badge" id="userBadge">Loading…</div>
+      <button class="btn-sm" onclick="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Navigation</div>
+        <div class="sidebar-item active" onclick="showView('articles')">
+          <span class="icon">&#128203;</span> Error Database
+        </div>
+        <div class="sidebar-item" onclick="showView('upload')" id="uploadNav" style="display:none;">
+          <span class="icon">&#128196;</span> Upload Document
+        </div>
+      </div>
+      <div class="sidebar-section" id="catFilter">
+        <div class="sidebar-label">Filter by Category</div>
+        <div class="sidebar-item" onclick="filterCategory('')">
+          <span class="icon">&#9635;</span> All
+        </div>
+        <div class="sidebar-item" onclick="filterCategory('network')">
+          <span class="icon">&#127760;</span> Network
+        </div>
+        <div class="sidebar-item" onclick="filterCategory('hardware')">
+          <span class="icon">&#128187;</span> Hardware
+        </div>
+        <div class="sidebar-item" onclick="filterCategory('software')">
+          <span class="icon">&#128736;</span> Software
+        </div>
+        <div class="sidebar-item" onclick="filterCategory('security')">
+          <span class="icon">&#128274;</span> Security
+        </div>
+        <div class="sidebar-item" onclick="filterCategory('other')">
+          <span class="icon">&#8943;</span> Other
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main>
+      <!-- ARTICLES VIEW -->
+      <div id="viewArticles">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Error Database</div>
+            <div class="page-sub">Browse and manage known IT errors and solutions</div>
+          </div>
+          <button class="btn-sm btn-sm-primary" id="newArticleBtn" style="display:none;" onclick="openCreateModal()">
+            + New Article
+          </button>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-wrap">
+            <span class="search-icon">&#128269;</span>
+            <input type="text" id="searchInput" placeholder="Search errors, descriptions, tags…" oninput="debounceSearch()" />
+          </div>
+          <select id="catSelect" onchange="filterCategory(this.value)">
+            <option value="">All categories</option>
+            <option value="network">Network</option>
+            <option value="hardware">Hardware</option>
+            <option value="software">Software</option>
+            <option value="security">Security</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Error / Title</th>
+                <th>Category</th>
+                <th>Tags</th>
+                <th>Views</th>
+                <th id="actionsHeader" style="display:none;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="articlesBody">
+              <tr class="loading-row"><td colspan="5">Loading articles…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- UPLOAD VIEW -->
+      <div id="viewUpload" style="display:none;">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Upload Document</div>
+            <div class="page-sub">Upload supporting files for error documentation</div>
+          </div>
+        </div>
+        <div class="table-wrap" style="padding: 2rem;">
+          <div class="form-group">
+            <label>Select file</label>
+            <input type="file" id="uploadFile" class="form-input" />
+          </div>
+          <button class="btn-sm btn-sm-primary" onclick="uploadFile()">Upload</button>
+          <div id="uploadMsg" style="margin-top:1rem; font-size:13px; color:#3B6D11;"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- CREATE / EDIT MODAL -->
+  <div class="modal-overlay" id="articleModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">New Article</div>
+        <button class="modal-close" onclick="closeModal()">&#10005;</button>
+      </div>
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" class="form-input" id="fTitle" placeholder="e.g. RFC_NO_AUTHORITY — authorization error" />
+      </div>
+      <div class="form-group">
+        <label>Category *</label>
+        <select class="form-input" id="fCategory">
+          <option value="network">Network</option>
+          <option value="hardware">Hardware</option>
+          <option value="software">Software</option>
+          <option value="security">Security</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Problem Description *</label>
+        <textarea class="form-input" id="fProblem" rows="4" placeholder="Describe the symptoms, error codes, affected systems…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Solution *</label>
+        <textarea class="form-input" id="fSolution" rows="4" placeholder="Step-by-step resolution, workarounds, permanent fixes…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Tags</label>
+        <input type="text" class="form-input" id="fTags" placeholder="SAP, AD, DNS, LDAP…" />
+        <div class="hint">Comma-separated tags for easier searching</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" id="saveBtn" onclick="saveArticle()">Save article</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+    <div class="detail-panel" id="detailPanel">
+      <button class="detail-close" onclick="closeDetailPanel()">&#10005;</button>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API = '';
+    let currentUser = null;
+    let editingId = null;
+    let currentCategory = '';
+    let searchTimer = null;
+
+    // ── AUTH ──
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login.html';
+
+    async function init() {
+      try {
+        const res = await fetch(`${API}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) { logout(); return; }
+        currentUser = await res.json();
+        document.getElementById('userBadge').innerHTML =
+          `<strong>${currentUser.username}</strong> <span class="role-badge ${currentUser.role === 'admin' ? 'role-admin' : 'role-user'}">${currentUser.role}</span>`;
+        if (currentUser.role === 'admin') {
+          document.getElementById('newArticleBtn').style.display = 'flex';
+          document.getElementById('actionsHeader').style.display = '';
+          document.getElementById('uploadNav').style.display = 'flex';
+        }
+        loadArticles();
+      } catch { logout(); }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/login.html';
+    }
+
+    // ── VIEWS ──
+    function showView(v) {
+      document.getElementById('viewArticles').style.display = v === 'articles' ? '' : 'none';
+      document.getElementById('viewUpload').style.display = v === 'upload' ? '' : 'none';
+      document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+      if (v === 'articles') document.querySelectorAll('.sidebar-item')[0].classList.add('active');
+    }
+
+    // ── ARTICLES ──
+    async function loadArticles(search = '', category = '') {
+      const tbody = document.getElementById('articlesBody');
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="5">Loading…</td></tr>';
+
+      let url = `${API}/articles/?limit=100`;
+      if (category) url += `&category=${category}`;
+      if (search)   url += `&search=${encodeURIComponent(search)}`;
+
+      try {
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) throw new Error();
+        const articles = await res.json();
+        renderArticles(articles);
+      } catch {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="5">Failed to load articles.</td></tr>';
+      }
+    }
+
+    function renderArticles(articles) {
+      const tbody = document.getElementById('articlesBody');
+      const isAdmin = currentUser?.role === 'admin';
+
+      if (!articles.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">&#128203;</div>No articles found</div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = articles.map(a => {
+        const tags = a.tags ? a.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '—';
+        const cat = a.category?.toLowerCase?.() || (typeof a.category === 'string' ? a.category.toLowerCase() : 'other');
+        const catLabel = cat.charAt(0).toUpperCase() + cat.slice(1);
+        const actions = isAdmin ? `
+          <td>
+            <div class="action-btns">
+              <button class="btn-icon" onclick="openEditModal(${a.id}, event)">Edit</button>
+              <button class="btn-icon btn-icon-danger" onclick="deleteArticle(${a.id}, event)">Delete</button>
+            </div>
+          </td>` : '<td></td>';
+        return `
+          <tr onclick="openDetail(${a.id})" style="cursor:pointer;">
+            <td>
+              <div class="article-title">${escHtml(a.title)}</div>
+              <div class="article-desc">${escHtml(a.problem_description)}</div>
+            </td>
+            <td><span class="cat-badge cat-${cat}">${catLabel}</span></td>
+            <td><div class="tag-list">${tags}</div></td>
+            <td><span class="views-count">&#128065; ${a.views}</span></td>
+            ${actions}
+          </tr>`;
+      }).join('');
+    }
+
+    // ── SEARCH ──
+    function debounceSearch() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        loadArticles(document.getElementById('searchInput').value, currentCategory);
+      }, 300);
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      document.getElementById('catSelect').value = cat;
+      document.querySelectorAll('#catFilter .sidebar-item').forEach((el, i) => {
+        el.classList.toggle('active', i === ['','network','hardware','software','security','other'].indexOf(cat));
+      });
+      loadArticles(document.getElementById('searchInput').value, cat);
+    }
+
+    // ── DETAIL ──
+    async function openDetail(id) {
+      document.getElementById('detailOverlay').classList.add('open');
+      document.getElementById('detailContent').innerHTML = '<div style="color:#aaa;font-size:13px;padding:2rem 0;">Loading…</div>';
+      try {
+        const res = await fetch(`${API}/articles/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        const a = await res.json();
+        const cat = a.category?.toLowerCase?.() || (typeof a.category === 'string' ? a.category.toLowerCase() : 'other');
+        const catLabel = cat.charAt(0).toUpperCase() + cat.slice(1);
+        const tags = a.tags ? a.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '';
+        document.getElementById('detailContent').innerHTML = `
+          <div class="detail-cat"><span class="cat-badge cat-${cat}">${catLabel}</span></div>
+          <div class="detail-title">${escHtml(a.title)}</div>
+          <div class="detail-meta">
+            <span>&#128065; ${a.views} views</span>
+            <span>&#128197; ${new Date(a.created_at).toLocaleDateString()}</span>
+            ${a.tags ? `<span>&#127991; ${a.tags}</span>` : ''}
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-label">Problem Description</div>
+            <div class="detail-section-body">${escHtml(a.problem_description)}</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-label">Solution</div>
+            <div class="detail-section-body solution-body">${escHtml(a.solution)}</div>
+          </div>
+          ${tags ? `<div class="detail-section"><div class="detail-section-label">Tags</div><div class="tag-list" style="margin-top:4px;">${tags}</div></div>` : ''}
+        `;
+        // refresh row views count
+        loadArticles(document.getElementById('searchInput').value, currentCategory);
+      } catch {
+        document.getElementById('detailContent').innerHTML = '<div style="color:#aaa;font-size:13px;">Failed to load article.</div>';
+      }
+    }
+
+    function closeDetail(e) {
+      if (e.target === document.getElementById('detailOverlay')) closeDetailPanel();
+    }
+    function closeDetailPanel() {
+      document.getElementById('detailOverlay').classList.remove('open');
+    }
+
+    // ── CREATE / EDIT MODAL ──
+    function openCreateModal() {
+      editingId = null;
+      document.getElementById('modalTitle').textContent = 'New Article';
+      document.getElementById('fTitle').value = '';
+      document.getElementById('fCategory').value = 'network';
+      document.getElementById('fProblem').value = '';
+      document.getElementById('fSolution').value = '';
+      document.getElementById('fTags').value = '';
+      document.getElementById('articleModal').classList.add('open');
+    }
+
+    async function openEditModal(id, e) {
+      e.stopPropagation();
+      editingId = id;
+      document.getElementById('modalTitle').textContent = 'Edit Article';
+      document.getElementById('articleModal').classList.add('open');
+      try {
+        const res = await fetch(`${API}/articles/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        const a = await res.json();
+        document.getElementById('fTitle').value = a.title;
+        document.getElementById('fCategory').value = typeof a.category === 'string' ? a.category.toLowerCase() : a.category;
+        document.getElementById('fProblem').value = a.problem_description;
+        document.getElementById('fSolution').value = a.solution;
+        document.getElementById('fTags').value = a.tags || '';
+      } catch { showToast('Failed to load article.'); closeModal(); }
+    }
+
+    function closeModal() {
+      document.getElementById('articleModal').classList.remove('open');
+      editingId = null;
+    }
+
+    async function saveArticle() {
+      const title    = document.getElementById('fTitle').value.trim();
+      const category = document.getElementById('fCategory').value;
+      const problem  = document.getElementById('fProblem').value.trim();
+      const solution = document.getElementById('fSolution').value.trim();
+      const tags     = document.getElementById('fTags').value.trim();
+
+      if (!title || !problem || !solution) { showToast('Please fill in all required fields.'); return; }
+
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Saving…';
+
+      const body = { title, category, problem_description: problem, solution, tags: tags || null };
+      const url    = editingId ? `${API}/articles/${editingId}` : `${API}/articles/`;
+      const method = editingId ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) { const d = await res.json(); showToast(d.detail || 'Save failed.'); return; }
+        closeModal();
+        showToast(editingId ? 'Article updated.' : 'Article created.');
+        loadArticles(document.getElementById('searchInput').value, currentCategory);
+      } catch { showToast('Server error.'); }
+      finally { btn.disabled = false; btn.textContent = 'Save article'; }
+    }
+
+    // ── DELETE ──
+    async function deleteArticle(id, e) {
+      e.stopPropagation();
+      if (!confirm('Delete this article? This cannot be undone.')) return;
+      try {
+        const res = await fetch(`${API}/articles/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.status === 204 || res.ok) {
+          showToast('Article deleted.');
+          loadArticles(document.getElementById('searchInput').value, currentCategory);
+        } else { showToast('Delete failed.'); }
+      } catch { showToast('Server error.'); }
+    }
+
+    // ── UPLOAD ──
+    async function uploadFile() {
+      const fileInput = document.getElementById('uploadFile');
+      const msg = document.getElementById('uploadMsg');
+      if (!fileInput.files.length) { msg.style.color = '#A32D2D'; msg.textContent = 'Please select a file.'; return; }
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      msg.style.color = '#aaa'; msg.textContent = 'Uploading…';
+      try {
+        const res = await fetch(`${API}/upload`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData
+        });
+        const data = await res.json();
+        if (res.ok) { msg.style.color = '#3B6D11'; msg.textContent = `✓ ${data.message}`; }
+        else { msg.style.color = '#A32D2D'; msg.textContent = data.detail || 'Upload failed.'; }
+      } catch { msg.style.color = '#A32D2D'; msg.textContent = 'Server error.'; }
+    }
+
+    // ── UTILS ──
+    function escHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('articleModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    init();
+  </script>
+</body>
+</html>

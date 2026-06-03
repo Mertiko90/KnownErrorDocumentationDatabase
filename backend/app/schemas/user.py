@@ -8,6 +8,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    role: str = "viewer"
 
 class UserLogin(BaseModel):
     username: str
@@ -16,7 +17,7 @@ class UserLogin(BaseModel):
 class User(UserBase):
     id: int
     is_active: bool
-    is_staff: bool
+    role: str
     created_at: datetime
 
     class Config:
