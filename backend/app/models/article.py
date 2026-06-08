@@ -23,6 +23,7 @@ class Article(Base):
     views = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    document_path = Column(String, nullable=True)
     
     # Foreign key to user
     author_id = Column(Integer, ForeignKey("users.id"))

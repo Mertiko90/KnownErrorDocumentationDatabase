@@ -3,6 +3,8 @@ from datetime import datetime
 from typing import Optional
 from ..models.article import CategoryEnum
 
+document_path: Optional[str] = None
+
 class ArticleBase(BaseModel):
     title: str
     problem_description: str

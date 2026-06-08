@@ -250,16 +250,23 @@
         <div class="page-header">
           <div>
             <div class="page-title">Upload Document</div>
-            <div class="page-sub">Upload supporting files for error documentation</div>
+            <div class="page-sub">Upload a Word document and link it to an existing article</div>
           </div>
         </div>
         <div class="table-wrap" style="padding: 2rem;">
           <div class="form-group">
-            <label>Select file</label>
-            <input type="file" id="uploadFile" class="form-input" />
+            <label>Link to Article *</label>
+            <select id="uploadArticleSelect" class="form-input">
+              <option value="">Loading articles…</option>
+            </select>
+            <div class="hint">Select the article this document belongs to</div>
           </div>
-          <button class="btn-sm btn-sm-primary" onclick="uploadFile()">Upload</button>
-          <div id="uploadMsg" style="margin-top:1rem; font-size:13px; color:#3B6D11;"></div>
+          <div class="form-group">
+            <label>Select Word file (.docx / .dotx) *</label>
+            <input type="file" id="uploadFile" class="form-input" accept=".docx,.dotx,.doc" />
+          </div>
+          <button class="btn-sm btn-sm-primary" onclick="uploadFile()">Upload & Link</button>
+          <div id="uploadMsg" style="margin-top:1rem; font-size:13px;"></div>
         </div>
       </div>
     </main>
@@ -357,6 +364,7 @@
       document.getElementById('viewUpload').style.display = v === 'upload' ? '' : 'none';
       document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
       if (v === 'articles') document.querySelectorAll('.sidebar-item')[0].classList.add('active');
+      if (v === 'upload') loadUploadArticles();
     }
 
     // ── ARTICLES ──
@@ -401,7 +409,7 @@
         return `
           <tr onclick="openDetail(${a.id})" style="cursor:pointer;">
             <td>
-              <div class="article-title">${escHtml(a.title)}</div>
+              <div class="article-title"><a href="/articles/${a.id}/template" target="_blank" onclick="event.stopPropagation()" style="color:var(--blue-600);text-decoration:none;border-bottom:1px dashed var(--blue-100);">${escHtml(a.title)}</a></div>
               <div class="article-desc">${escHtml(a.problem_description)}</div>
             </td>
             <td><span class="cat-badge cat-${cat}">${catLabel}</span></td>
@@ -552,12 +560,27 @@
     }
 
     // ── UPLOAD ──
+    async function loadUploadArticles() {
+      try {
+        const res = await fetch(`${API}/articles/?limit=200`, { headers: { Authorization: `Bearer ${token}` } });
+        const articles = await res.json();
+        const sel = document.getElementById('uploadArticleSelect');
+        sel.innerHTML = '<option value="">— Select article —</option>' +
+          articles.map(a => `<option value="${a.id}">${a.title}</option>`).join('');
+      } catch { }
+    }
+
     async function uploadFile() {
       const fileInput = document.getElementById('uploadFile');
+      const articleId = document.getElementById('uploadArticleSelect').value;
       const msg = document.getElementById('uploadMsg');
+
+      if (!articleId) { msg.style.color = '#A32D2D'; msg.textContent = 'Please select an article.'; return; }
       if (!fileInput.files.length) { msg.style.color = '#A32D2D'; msg.textContent = 'Please select a file.'; return; }
+
       const formData = new FormData();
       formData.append('file', fileInput.files[0]);
+      formData.append('article_id', articleId);
       msg.style.color = '#aaa'; msg.textContent = 'Uploading…';
       try {
         const res = await fetch(`${API}/upload`, {
@@ -566,8 +589,12 @@
           body: formData
         });
         const data = await res.json();
-        if (res.ok) { msg.style.color = '#3B6D11'; msg.textContent = `✓ ${data.message}`; }
-        else { msg.style.color = '#A32D2D'; msg.textContent = data.detail || 'Upload failed.'; }
+        if (res.ok) {
+          msg.style.color = '#3B6D11';
+          msg.textContent = `✓ ${data.message}`;
+          fileInput.value = '';
+          document.getElementById('uploadArticleSelect').value = '';
+        } else { msg.style.color = '#A32D2D'; msg.textContent = data.detail || 'Upload failed.'; }
       } catch { msg.style.color = '#A32D2D'; msg.textContent = 'Server error.'; }
     }
 
